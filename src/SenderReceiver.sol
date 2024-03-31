@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {AxelarExecutable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
-import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
-import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
+import {AxelarExecutable} from "axelar-gmp-sdk-solidity/executable/AxelarExecutable.sol";
+import {IAxelarGateway} from "axelar-gmp-sdk-solidity/interfaces/IAxelarGateway.sol";
+import {IAxelarGasService} from "axelar-gmp-sdk-solidity/interfaces/IAxelarGasService.sol";
 
 contract SenderReceiver is AxelarExecutable {
     IAxelarGasService public immutable gasService;
-
     string public message;
+
+    event Executed(string from);
 
     constructor(
         address gateway_,
@@ -17,7 +18,6 @@ contract SenderReceiver is AxelarExecutable {
         gasService = IAxelarGasService(gasService_);
     }
 
-    // sender
     function sendMessage(
         string calldata destinationChain,
         string calldata destinationAddress,
@@ -34,7 +34,6 @@ contract SenderReceiver is AxelarExecutable {
         gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
-    // receiver
     function _execute(
         string calldata sourceChain,
         string calldata sourceAddress,
@@ -42,6 +41,7 @@ contract SenderReceiver is AxelarExecutable {
     ) internal override {
         // we knew that we are expecting a string
         // because the type of message in sender is a string
-        message = abi.decode(payload_, (string));
+        //message = abi.decode(payload_, (string));
+        emit Executed(sourceAddress);
     }
 }
